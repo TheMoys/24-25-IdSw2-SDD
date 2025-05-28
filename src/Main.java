@@ -6,14 +6,17 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        Map<String, Caja> maquinas = new HashMap<>();
+        // Crear máquinas expendedoras con sus cajas
+        Map<String, Caja> maquinas = new LinkedHashMap<>();
         maquinas.put("Maquina-1", new Caja("Maquina-1"));
         maquinas.put("Maquina-2", new Caja("Maquina-2"));
 
+        // Inicializar las cajas con efectivo
         ControladorPago controladorPago = new ControladorPago();
         maquinas.values().forEach(caja -> inicializarCaja(controladorPago, caja));
 
-        Map<String, Double> productos = new HashMap<>();
+        // Crear productos en las máquinas
+        Map<String, Double> productos = new LinkedHashMap<>();
         productos.put("Coca-Cola", 1.5);
         productos.put("Pepsi", 1.4);
         productos.put("Agua", 1.0);
@@ -26,6 +29,7 @@ public class Main {
         System.out.println("========================================");
         usuario.mostrarSaldos();
 
+        // Mostrar contenido inicial de la caja
         System.out.println("\n========================================");
         System.out.println("       Contenido inicial de la caja");
         System.out.println("========================================");
@@ -35,46 +39,62 @@ public class Main {
             System.out.println("----------------------------------------");
         });
 
+        // Mostrar menú de máquinas
         System.out.println("\n========================================");
         System.out.println("       Seleccione una máquina");
         System.out.println("========================================");
-        maquinas.keySet().forEach(System.out::println);
-        System.out.print("Ingrese el nombre de la máquina: ");
-        String maquinaSeleccionada = scanner.nextLine();
+        List<String> maquinasList = new ArrayList<>(maquinas.keySet());
+        for (int i = 0; i < maquinasList.size(); i++) {
+            System.out.println((i + 1) + ". " + maquinasList.get(i));
+        }
+        System.out.print("Ingrese el número de la máquina: ");
+        int maquinaSeleccionadaIndex = scanner.nextInt() - 1;
 
-        if (!maquinas.containsKey(maquinaSeleccionada)) {
+        if (maquinaSeleccionadaIndex < 0 || maquinaSeleccionadaIndex >= maquinasList.size()) {
             System.out.println("Máquina no válida. Saliendo...");
             return;
         }
 
-        Caja caja = maquinas.get(maquinaSeleccionada);
+        Caja caja = maquinas.get(maquinasList.get(maquinaSeleccionadaIndex));
 
+        // Mostrar menú de productos
         System.out.println("\n========================================");
         System.out.println("       Productos disponibles");
         System.out.println("========================================");
-        productos.forEach((nombre, precio) -> System.out.println(nombre + " - €" + precio));
-        System.out.print("Ingrese el producto que desea comprar: ");
-        String productoSeleccionado = scanner.nextLine();
+        List<Map.Entry<String, Double>> productosList = new ArrayList<>(productos.entrySet());
+        for (int i = 0; i < productosList.size(); i++) {
+            System.out.println((i + 1) + ". " + productosList.get(i).getKey() + " - €" + productosList.get(i).getValue());
+        }
+        System.out.print("Ingrese el número del producto que desea comprar: ");
+        int productoSeleccionadoIndex = scanner.nextInt() - 1;
 
-        if (!productos.containsKey(productoSeleccionado)) {
+        if (productoSeleccionadoIndex < 0 || productoSeleccionadoIndex >= productosList.size()) {
             System.out.println("Producto no válido. Saliendo...");
             return;
         }
 
-        double precioProducto = productos.get(productoSeleccionado);
+        Map.Entry<String, Double> productoSeleccionado = productosList.get(productoSeleccionadoIndex);
+        double precioProducto = productoSeleccionado.getValue();
         System.out.println("El precio del producto es: €" + precioProducto);
 
-        System.out.print("\nSeleccione el método de pago (EFECTIVO/MONEDERO/BANCARIA): ");
-        String metodoPago = scanner.nextLine().toUpperCase();
+        // Elegir método de pago
+        System.out.println("\n========================================");
+        System.out.println("       Métodos de pago");
+        System.out.println("========================================");
+        System.out.println("1. EFECTIVO");
+        System.out.println("2. MONEDERO");
+        System.out.println("3. BANCARIA");
+        System.out.print("Seleccione el método de pago: ");
+        int metodoPagoSeleccionado = scanner.nextInt();
 
-        switch (metodoPago) {
-            case "EFECTIVO":
+        switch (metodoPagoSeleccionado) {
+            case 1:
                 procesarPagoEfectivo(scanner, usuario, controladorPago, caja, precioProducto);
                 break;
-            case "MONEDERO":
+            case 2:
                 procesarPagoTarjeta(usuario, "MONEDERO", precioProducto);
                 break;
-            case "BANCARIA":
+            case 3:
                 procesarPagoTarjeta(usuario, "BANCARIA", precioProducto);
                 break;
             default:
@@ -86,6 +106,7 @@ public class Main {
         System.out.println("========================================");
         usuario.mostrarSaldos();
 
+        // Mostrar contenido final de la caja
         System.out.println("\n========================================");
         System.out.println("       Contenido final de la caja");
         System.out.println("========================================");

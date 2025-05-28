@@ -5,16 +5,22 @@ import java.util.List;
 
 public class PagoEfectivo {
     
-    private double monto;
-    private List<Efectivo> listaEfectivo;
-    private double cambio;
+    private double monto; // Monto requerido para el pago
+    private List<Efectivo> listaEfectivo; // Lista de denominaciones ingresadas
+    private double cambio; // Cambio calculado
 
     public PagoEfectivo(double monto) {
         this.monto = monto;
-        this.listaEfectivo = new ArrayList<Efectivo>();
+        this.listaEfectivo = new ArrayList<>();
+        this.cambio = 0.0;
     }
 
     public double getMonto() {
+        return monto;
+    }
+
+    // Nuevo método para obtener el monto requerido
+    public double getMontoRequerido() {
         return monto;
     }
     
@@ -30,18 +36,21 @@ public class PagoEfectivo {
         listaEfectivo.add(efectivo);
     }
 
-    public boolean validarEfectivo() {
+    public double getMontoIngresado() {
         double total = 0;
         for (Efectivo efectivo : listaEfectivo) {
             total += efectivo.getDenominacion();
-            cambio = total - monto;
-            if (cambio < 0) {
-                return false;
-            }
         }
-        if (total >= monto) {
+        return total;
+    }
+
+    public boolean validarEfectivo() {
+        double totalIngresado = getMontoIngresado();
+        if (totalIngresado >= monto) {
+            cambio = totalIngresado - monto;
             return true;
         }
+        cambio = 0.0;
         return false;
     }
 }

@@ -29,16 +29,20 @@ public class ControladorPago {
 
     public void agregarEfectivo(Efectivo efectivo) {
         if (pagoEfectivo == null) {
-            System.out.println("Inicie el pago en efectivo primero.");
-            return;
+            System.out.println("Iniciando el pago en efectivo automáticamente.");
+            iniciarPagoEfectivo(0); // Inicializa con un monto de 0
         }
         pagoEfectivo.ingresarEfectivo(efectivo);
-        if (pagoEfectivo.validarEfectivo()) {
-            pagoRealizado = true;
-            System.out.println("Pago en efectivo validado.");
-        } else {
-            pagoRealizado = false;
-            System.out.println("Monto insuficiente.");
+    
+        // Validar solo si el monto total ingresado es suficiente
+        if (pagoEfectivo.getMontoIngresado() >= pagoEfectivo.getMontoRequerido()) {
+            if (pagoEfectivo.validarEfectivo()) {
+                pagoRealizado = true;
+                System.out.println("Pago en efectivo validado.");
+            } else {
+                pagoRealizado = false;
+                System.out.println("Monto insuficiente.");
+            }
         }
     }
 
